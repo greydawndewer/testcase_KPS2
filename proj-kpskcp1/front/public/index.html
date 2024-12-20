@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Voting App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="container">
+      <div class="sidebar">
+        <ul>
+          <li><button onclick="redirectToTeacherLogin()">Teacher Dashboard</button></li> 
+        </ul>
+      </div>
+
+    <div class="main-content">
+      <div class="img-container">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJNCA1lSIQVxe5WVw6W2hrOCRvu69xl4x_iw&s" alt="Kps Kadma" width="100">
+      <h1>Student Cabinet Elections</h1>
+      </div>
+      <hr>
+      <section>
+        <section>
+          <span class="class">
+            <label for="class">Class</label>
+            <select id="class" required>
+              <option value="" disabled selected>Select Your Class</option>
+              <option value="VII">VI</option>
+              <option value="VII">VII</option>
+              <option value="VII">VIII</option>
+              <option value="IX">IX</option>
+              <option value="X">X</option>
+              <option value="XI">XI</option>
+              <option value="XII">XII</option>
+            </select>
+          </span>
+
+          <span class="sec">
+            <label for="sec">Section</label>
+            <select id="sec" required>
+              <option value="" disabled selected>Select Your Section</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+            </select>
+          </span>
+
+          <span class="roll">
+            <label for="roll">Roll No.</label>
+            <input id="roll" type="number" placeholder="Enter Your Roll" required>
+            </select>
+          </span>
+
+      <div class="voting-section">
+        <span class="section-header">
+          <h2>Vote for President</h2>
+          <h2>Vote for Vice President</h2>
+        </span>
+
+        <div class="candidate-columns">
+          <div class="president-candidates">
+            <div class="candidate">
+              <input type="radio" id="president1" name="president" value="Candidate 1">
+              <label for="president1">Candidate 1</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="president2" name="president" value="Candidate 2">
+              <label for="president2">Candidate 2</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="president3" name="president" value="Candidate 3">
+              <label for="president3">Candidate 3</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="president4" name="president" value="Candidate 4">
+              <label for="president4">Candidate 4</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="president5" name="president" value="Candidate 5">
+              <label for="president5">Candidate 5</label>
+            </div>
+          </div>
+
+          <div class="vice-president-candidates">
+            <div class="candidate">
+              <input type="radio" id="vp1" name="vp" value="Candidate 1">
+              <label for="vp1">Candidate 1</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="vp2" name="vp" value="Candidate 2">
+              <label for="vp2">Candidate 2</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="vp3" name="vp" value="Candidate 3">
+              <label for="vp3">Candidate 3</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="vp4" name="vp" value="Candidate 4">
+              <label for="vp4">Candidate 4</label>
+            </div>
+            <div class="candidate">
+              <input type="radio" id="vp5" name="vp" value="Candidate 5">
+              <label for="vp5">Candidate 5</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form onsubmit="return submitVote();"> 
+        <button type="submit">Submit Vote</button>
+      </form>
+
+      <footer>
+        <p>© 1992 KPS KADMA. All Rights Reserved.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    function redirectToTeacherLogin() {
+      window.location.href = "teacher_login.html";
+    }
+
+    function submitVote() {
+      const president = document.querySelector('input[name="president"]:checked').value;
+      const vp = document.querySelector('input[name="vp"]:checked').value;
+      console.log(vp)
+      const roll = document.getElementById('roll').value;
+      const std = document.getElementById('class').value;
+      const sec = document.getElementById('sec').value;
+      console.log(roll)
+
+      // Updated the port to 3000
+      fetch('http://localhost:8000/auth/results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roll: roll, std: std, sec: sec, pres: president, vpres: vp})
+      });
+
+      location.reload()
+
+      alert('Vote submitted successfully!');  
+      return false;
+    }
+  </script>
+
+</body>
+</html>

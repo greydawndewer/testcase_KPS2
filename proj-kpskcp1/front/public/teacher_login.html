@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teacher Login</title>
+  <link rel="stylesheet" href="stylet.css"> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <div class="sidebar">
+      <h2>Teacher Dashboard</h2>
+      <ul>
+        <li><a href="index.html">Back to Voting Page</a></li>
+      </ul>
+      <ul>
+        <li><a href="register.html">New Registration</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content"> 
+      <h1>Teacher Login</h1>
+
+      <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Login</button>
+      </form>
+
+      <div id="results" style="display: none;"> 
+        <h2>Results</h2>
+        <p id="presidentResults">President Results</p>
+        <p id="vicePresidentResults">Vice President Results</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let x = 0;
+    const loginForm = document.getElementById("loginForm");
+    const resultsDiv = document.getElementById("results");
+  
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault(); // Prevent form submission
+  
+      const std = document.getElementById('username').value;
+      const sec = document.getElementById('password').value;
+  
+      console.log(JSON.stringify({ username: std, password: sec }));
+  
+      fetch('http://localhost:8000/auth/log', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: std, password: sec })
+      })
+      .then(response => response.json())
+      .then(data => {
+        x = data;
+        if (x == 1) {
+          fetch('http://localhost:8000/auth/vote', {
+            method: "GET",
+          })
+          .then(response => response.json())
+          .then(data => {
+
+            const headers = [["Roll Number", "Section", "Standard", "President", "Vice President"]];
+          const worksheet = XLSX.utils.json_to_sheet(data, { origin: 'A2', skipHeader: true });
+          XLSX.utils.sheet_add_aoa(worksheet, headers, { origin: 'A1' });
+          var wscols = [
+              { wch: 20 },  
+              { wch: 20 },
+              { wch: 20 },
+              { wch: 20 },
+              { wch: 20 }
+          ];
+  
+          worksheet['!cols'] = wscols;
+
+          for (let key in worksheet) {
+            if (worksheet.hasOwnProperty(key) && key[0] !== '!') {
+              if (!worksheet[key].s) worksheet[key].s = {}; worksheet[key].s.alignment = {
+                horizontal: "left" 
+              }; 
+             } 
+          } 
+
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Voting Results");
+  
+
+          const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'voting_results.xlsx'; 
+  
+
+          document.body.appendChild(link);
+          link.click();
+  
+
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+            
+            console.log("Voting Data:", data); 
+  
+
+            const presidentVotes = {};
+            const vicePresidentVotes = {};
+  
+            data.forEach(vote => {
+              const president = vote.pres; 
+              const vicePresident = vote.vpres; 
+  
+              if (president) {
+                presidentVotes[president] = (presidentVotes[president] || 0) + 1;
+              }
+              if (vicePresident) {
+                vicePresidentVotes[vicePresident] = (vicePresidentVotes[vicePresident] || 0) + 1;
+              }
+            });
+  
+            console.log("President Votes:", presidentVotes); 
+            console.log("Vice President Votes:", vicePresidentVotes);
+  
+
+            const presidentVoteData = Object.entries(presidentVotes).map(([candidate, count]) => ({
+              "Candidate": candidate,
+              "Votes": count
+            }));
+  
+
+            const presidentWorksheet = XLSX.utils.json_to_sheet(presidentVoteData);
+            const presidentWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(presidentWorkbook, presidentWorksheet, "President Votes");
+  
+
+            presidentWorksheet['!cols'] = [
+              { wch: 30 }, 
+              { wch: 10 } 
+            ];
+  
+
+            const presidentExcelBuffer = XLSX.write(presidentWorkbook, { bookType: 'xlsx', type: 'array' });
+            const presidentBlob = new Blob([presidentExcelBuffer], { type: 'application/octet-stream' });
+  
+
+            const presidentLink = document.createElement('a');
+            presidentLink.href = URL.createObjectURL(presidentBlob);
+            presidentLink.download = 'president_votes.xlsx';
+            document.body.appendChild(presidentLink);
+            presidentLink.click();
+            document.body.removeChild(presidentLink);
+            URL.revokeObjectURL(presidentLink.href);
+  
+
+            const vicePresidentVoteData = Object.entries(vicePresidentVotes).map(([candidate, count]) => ({
+              "Candidate": candidate,
+              "Votes": count
+            }));
+  
+
+            const vicePresidentWorksheet = XLSX.utils.json_to_sheet(vicePresidentVoteData);
+            const vicePresidentWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(vicePresidentWorkbook, vicePresidentWorksheet, "Vice President Votes");
+
+            vicePresidentWorksheet['!cols'] = [
+              { wch: 30 }, 
+              { wch: 10 } 
+            ];
+  
+
+            const vicePresidentExcelBuffer = XLSX.write(vicePresidentWorkbook, { bookType: 'xlsx', type: 'array' });
+            const vicePresidentBlob = new Blob([vicePresidentExcelBuffer], { type: 'application/octet-stream' });
+  
+            const vicePresidentLink = document.createElement('a');
+            vicePresidentLink.href = URL.createObjectURL( vicePresidentBlob);
+            vicePresidentLink.download = 'vice_president_votes.xlsx';
+            document.body.appendChild(vicePresidentLink);
+            vicePresidentLink.click();
+            document.body.removeChild(vicePresidentLink);
+            URL.revokeObjectURL(vicePresidentLink.href);
+          })
+          .catch(error => {
+            console.error("Error fetching voting data:", error);
+          });
+        }
+      })
+      .catch(error => {
+        console.error("Error during login:", error);
+      });
+    });
+  </script>
+
+</body>
+</html>

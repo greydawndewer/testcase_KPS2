@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+  }
+  
+  .container {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #71797E;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar a,
+.sidebar button {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 20px;
+  margin-bottom: 50px;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.sidebar a:hover,
+.sidebar button:hover {
+  background-color: #3e8e41;
+  transform: scale(1.05);
+}
+
+.sidebar a:active,
+.sidebar button:active {
+  transform: scale(0.95);
+}
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 430px;
+  }
+  
+  .main-content h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input[type="email"],
+  input[type="text"],
+  input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: #3e8e41;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  #error-message {
+    color: red;
+    margin-top: 10px;
+  }
